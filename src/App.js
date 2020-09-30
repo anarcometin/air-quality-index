@@ -94,8 +94,8 @@ const Container = ({
               {feed.aqi}
             </div>
             <div className="f7 pv2">
-              {getAttributions(feed) && feed.attributions.map(({ url, name }) => (
-                <div className="flex justify-between pv1 ph3">
+              {getAttributions(feed) && feed.attributions.map(({ url, name }, i) => (
+                <div key={i} className="flex justify-between pv1 ph3">
                   <div>{name}</div>
                   <Link url={url} />
                 </div>
