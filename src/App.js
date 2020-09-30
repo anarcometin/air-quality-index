@@ -1,6 +1,10 @@
 import React from 'react'
-import { compose, invoker, prop } from 'ramda'
+import { compose, invoker, path, prop } from 'ramda'
 import 'tachyons'
+
+const getCityName = path(['city', 'name'])
+const getCityCoors = path(['city', 'geo'])
+const getAttributions = path(['attributions'])
 
 const Container = ({
   feed,
@@ -53,8 +57,9 @@ const Container = ({
           <div className="br1 br--bottom flex flex-column w5 bb bl br b--light-gray border-box">
             {searchData ? (
               <div className="pv2">
-                {searchData.map(({ station: { name } }) => (
+                {searchData.map(({ station: { name }, uid }) => (
                   <button
+                    key={uid}
                     className="pv2 ph3 flex-grow-0 flex-shrink-0 b-white ba-0 b--white tl w-100 border-box"
                     onClick={() =>
                       fetch(
@@ -79,16 +84,16 @@ const Container = ({
         {feed && (
           <div className="ba b--light-gray br1 ml5" style={{ width: 512 }}>
             <div className="pv2 ph3 flex justify-between">
-              {feed.city.name}
+              {getCityName(feed) && feed.city.name}
               <div>
-                ({feed.city.geo[0]}, {feed.city.geo[1]})
-            </div>
+                {getCityCoors(feed) && (feed.city.geo[0], feed.city.geo[1])}
+              </div>
             </div>
             <div className="h4 pv2 ph3 flex justify-center items-center f1">
               {feed.aqi}
             </div>
             <div className="f7 pv2">
-              {feed.attributions.map(({ url, name }) => (
+              {getAttributions(feed) && feed.attributions.map(({ url, name }) => (
                 <div className="flex justify-between pv1 ph3">
                   <div>{name}</div>
                   <div className="blue pl3">{url}</div>
