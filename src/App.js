@@ -1,6 +1,7 @@
 import React from 'react'
 import { compose, invoker, path, prop } from 'ramda'
 import 'tachyons'
+import { Link } from './components/link/Link'
 
 const getCityName = path(['city', 'name'])
 const getCityCoors = path(['city', 'geo'])
@@ -46,7 +47,7 @@ const Container = ({
               />
               <button
                 type="submit"
-                className="br1 bl-0 br--top br--right b--light-gray white pa2 right-0 flex-grow-0 flex-shrink-0"
+                className="br1 bl-0 br--top br--right b--light-gray dim pointer white pa2 right-0 flex-grow-0 flex-shrink-0"
               >
                 <span role="img" aria-label="search">
                   🕵️
@@ -60,7 +61,7 @@ const Container = ({
                 {searchData.map(({ station: { name }, uid }) => (
                   <button
                     key={uid}
-                    className="pv2 ph3 flex-grow-0 flex-shrink-0 b-white ba-0 b--white tl w-100 border-box"
+                    className="pv2 ph3 flex-grow-0 flex-shrink-0 b-white ba-0 b--white tl w-100 border-box dim pointer"
                     onClick={() =>
                       fetch(
                         `http://api.waqi.info/feed/${name}/?token=8d8e978e647d2b0a8c17c04ba331c0117cd06dc8`
@@ -96,7 +97,7 @@ const Container = ({
               {getAttributions(feed) && feed.attributions.map(({ url, name }) => (
                 <div className="flex justify-between pv1 ph3">
                   <div>{name}</div>
-                  <div className="blue pl3">{url}</div>
+                  <Link url={url} />
                 </div>
               ))}
             </div>
