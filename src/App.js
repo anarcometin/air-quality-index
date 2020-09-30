@@ -87,7 +87,7 @@ const Container = ({
             <div className="pv2 ph3 flex justify-between">
               {getCityName(feed) && feed.city.name}
               <div>
-                {getCityCoors(feed) && (feed.city.geo[0], feed.city.geo[1])}
+                {getCityCoors(feed) && (`${feed.city.geo[0]}, ${feed.city.geo[1]}`)}
               </div>
             </div>
             <div className="h4 pv2 ph3 flex justify-center items-center f1">
