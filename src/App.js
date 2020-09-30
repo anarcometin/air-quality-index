@@ -1,5 +1,5 @@
 import React from 'react'
-import * as R from 'ramda'
+import { compose, invoker, prop } from 'ramda'
 import 'tachyons'
 
 const Container = ({
@@ -23,8 +23,8 @@ const Container = ({
               fetch(
                 `http://api.waqi.info/search/?keyword=${search}&token=8d8e978e647d2b0a8c17c04ba331c0117cd06dc8`
               )
-                .then(R.invoker(0, 'json'))
-                .then(R.prop('data'))
+                .then(invoker(0, 'json'))
+                .then(prop('data'))
                 .then(setSearchData)
             }}
           >
@@ -33,10 +33,10 @@ const Container = ({
                 type="text"
                 value={search}
                 placeholder="Melbourne"
-                onChange={R.compose(
+                onChange={compose(
                   setSearch,
-                  R.prop('value'),
-                  R.prop('target')
+                  prop('value'),
+                  prop('target')
                 )}
                 className="br1 br--top br--left ba b--light-gray ph3 pv2 flex-grow-1 flex-shrink-1"
               />
@@ -60,8 +60,8 @@ const Container = ({
                       fetch(
                         `http://api.waqi.info/feed/${name}/?token=8d8e978e647d2b0a8c17c04ba331c0117cd06dc8`
                       )
-                        .then(R.invoker(0, 'json'))
-                        .then(R.prop('data'))
+                        .then(invoker(0, 'json'))
+                        .then(prop('data'))
                         .then(setFeed)
                     }
                   >
@@ -117,7 +117,7 @@ const withState = (name, setName, initialState) => (Component) => {
   return WithState
 }
 
-export const App = R.compose(
+export const App = compose(
   withState('feed', 'setFeed', null),
   withState('search', 'setSearch', ''),
   withState('searchData', 'setSearchData', null)
