@@ -1,11 +1,10 @@
 import React from 'react'
-import { compose, invoker, path, prop } from 'ramda'
+import { compose } from 'ramda'
 import 'tachyons'
-import { Link } from './components/link/Link'
-
-const getCityName = path(['city', 'name'])
-const getCityCoors = path(['city', 'geo'])
-const getAttributions = path(['attributions'])
+import { Feed } from './components/feed/Feed'
+import { Stations } from './components/stations/Stations'
+import { Search } from './components/search/Search'
+import { withError } from './components/error/error-context'
 
 const Container = ({
   feed,
@@ -14,67 +13,18 @@ const Container = ({
   setSearch,
   searchData,
   setSearchData,
-}) => (
+}) => {
+  return (
     <div className="flex flex-column">
       <header className="f2 pv3 ph4 bg-light-purple white flex-grow-0 flex-shrink-0">
         Air Quality Index
     </header>
       <div className="pa5 flex-grow-1 flex-shrink-0 flex items-start">
         <div>
-          <form
-            className="flex"
-            onSubmit={(event) => {
-              event.preventDefault()
-              fetch(
-                `http://api.waqi.info/search/?keyword=${search}&token=8d8e978e647d2b0a8c17c04ba331c0117cd06dc8`
-              )
-                .then(invoker(0, 'json'))
-                .then(prop('data'))
-                .then(setSearchData)
-            }}
-          >
-            <div className="w5 flex items-center">
-              <input
-                type="text"
-                value={search}
-                placeholder="Melbourne"
-                onChange={compose(
-                  setSearch,
-                  prop('value'),
-                  prop('target')
-                )}
-                className="br1 br--top br--left ba b--light-gray ph3 pv2 flex-grow-1 flex-shrink-1"
-              />
-              <button
-                type="submit"
-                className="br1 bl-0 br--top br--right b--light-gray dim pointer white pa2 right-0 flex-grow-0 flex-shrink-0"
-              >
-                <span role="img" aria-label="search">
-                  🕵️
-              </span>
-              </button>
-            </div>
-          </form>
+          <Search search={search} setSearch={setSearch} setSearchData={setSearchData} />
           <div className="br1 br--bottom flex flex-column w5 bb bl br b--light-gray border-box">
             {searchData ? (
-              <div className="pv2">
-                {searchData.map(({ station: { name }, uid }) => (
-                  <button
-                    key={uid}
-                    className="pv2 ph3 flex-grow-0 flex-shrink-0 b-white ba-0 b--white tl w-100 border-box dim pointer"
-                    onClick={() =>
-                      fetch(
-                        `http://api.waqi.info/feed/${name}/?token=8d8e978e647d2b0a8c17c04ba331c0117cd06dc8`
-                      )
-                        .then(invoker(0, 'json'))
-                        .then(prop('data'))
-                        .then(setFeed)
-                    }
-                  >
-                    {name}
-                  </button>
-                ))}
-              </div>
+              Stations(searchData, setFeed)
             ) : (
                 <div className="ph3 pv2 silver h4 flex items-center justify-center">
                   Search for a city
@@ -82,30 +32,11 @@ const Container = ({
               )}
           </div>
         </div>
-        {feed && (
-          <div className="ba b--light-gray br1 ml5" style={{ width: 512 }}>
-            <div className="pv2 ph3 flex justify-between">
-              {getCityName(feed) && feed.city.name}
-              <div>
-                {getCityCoors(feed) && (`${feed.city.geo[0]}, ${feed.city.geo[1]}`)}
-              </div>
-            </div>
-            <div className="h4 pv2 ph3 flex justify-center items-center f1">
-              {feed.aqi}
-            </div>
-            <div className="f7 pv2">
-              {getAttributions(feed) && feed.attributions.map(({ url, name }, i) => (
-                <div key={i} className="flex justify-between pv1 ph3">
-                  <div>{name}</div>
-                  <Link url={url} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <Feed feed={feed} />
       </div>
     </div>
   )
+}
 
 const withState = (name, setName, initialState) => (Component) => {
   const factory = React.createFactory(Component)
@@ -124,7 +55,8 @@ const withState = (name, setName, initialState) => (Component) => {
 }
 
 export const App = compose(
+  withError,
   withState('feed', 'setFeed', null),
   withState('search', 'setSearch', ''),
-  withState('searchData', 'setSearchData', null)
+  withState('searchData', 'setSearchData', null),
 )(Container)
