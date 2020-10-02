@@ -23,13 +23,9 @@ const Container = ({
         <div>
           <Search search={search} setSearch={setSearch} setSearchData={setSearchData} />
           <div className="br1 br--bottom flex flex-column w5 bb bl br b--light-gray border-box">
-            {searchData ? (
+            {searchData && (
               Stations(searchData, setFeed)
-            ) : (
-                <div className="ph3 pv2 silver h4 flex items-center justify-center">
-                  Search for a city
-                </div>
-              )}
+            )}
           </div>
         </div>
         <Feed feed={feed} />
