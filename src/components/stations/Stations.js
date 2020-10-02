@@ -1,13 +1,14 @@
-import React from 'react';
-import { invoker, prop } from 'ramda'
+import React, { useState } from 'react';
+import { invoker, map, prop } from 'ramda'
 import { useErrorDispatch } from '../error/error-context'
 
 export const Stations = (data, setFeed) => {
   const dispatch = useErrorDispatch();
+  const [stationData, setStationData] = useState(data)
   return <div className="pv2">
     {
-      data.map(({ station: { name }, uid }) => (
-        <button
+      map(({ station: { name }, uid }) => (
+        <div
           key={uid}
           className="pv2 ph3 flex-grow-0 flex-shrink-0 b-white ba-0 b--white tl w-100 border-box dim pointer"
           onClick={() =>
@@ -17,16 +18,21 @@ export const Stations = (data, setFeed) => {
               .then(invoker(0, 'json'))
               .then(prop('status', 'data'))
               .then(({ status, data }) => {
-                if (status === 'error') dispatch({ type: "setError", error: { message: data } })
-                else dispatch({ type: "setError", error: {} })
+                if (status === 'error')
+                  dispatch({ type: "setError", error: { message: data } })
+
+                else {
+                  setStationData([])
+                  dispatch({ type: "setError", error: {} })
+                }
                 return data
               })
               .then(setFeed)
           }
         >
           {name}
-        </button>
-      ))
+        </div>
+      ), stationData)
     }
   </div>
 }
