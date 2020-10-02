@@ -2,25 +2,25 @@ import React from 'react'
 import { path } from 'ramda'
 import 'tachyons'
 import { Link } from '../link/Link';
-import { isAvailable } from '../../utils'
+import { isAvailable, mapIndexed } from '../../utils'
 import { Error } from '../../components/error/Error'
+import { AirQuality } from './aqi/Aqi'
 
 const getCityName = path(['city', 'name'])
-const getCityCoors = path(['city', 'geo'])
-const getAttributions = path(['attributions'])
+const hasCoors = path(['city', 'geo'])
 
-const getAqi = path(['aqi'])
-const Attributions = (feed) =>
-  getAttributions(feed) && feed.attributions.map(({ url, name }, i) => (
-    <div key={i} className="flex justify-between pv1 ph3">
+const Attributions = ({ attributions }) =>
+  isAvailable(attributions)
+  && mapIndexed(({ url, name }, i) => (
+    <div key={i} className="flex flex-column justify-between pv1 ph3">
       <div>{name}</div>
       <Link url={url} />
     </div>
-  ))
+  ), attributions)
 
 export const Feed = ({ feed }) => {
   return isAvailable(feed) ?
-    <div className="ba b--light-gray br1 ml5" style={{ width: 512 }}>
+    <div className="ba b--light-gray br1 ml5 w-512 mw-100">
       <Error />
       {
         getCityName(feed) &&
@@ -28,14 +28,12 @@ export const Feed = ({ feed }) => {
           <div className="pv2 ph3 flex justify-between">
             {feed.city.name}
             <div>
-              {getCityCoors(feed) && (`${feed.city.geo[0]}, ${feed.city.geo[1]}`)}
+              {hasCoors(feed) && (`${feed.city.geo[0]}, ${feed.city.geo[1]}`)}
             </div>
           </div>
-          <div className="h4 pv2 ph3 flex justify-center items-center f1">
-            {getAqi(feed) && feed.aqi}
-          </div>
+          <AirQuality aqi={feed.aqi} />
           <div className="f7 pv2">
-            {Attributions(feed)}
+            <Attributions attributions={feed.attributions} />
           </div>
         </>
         )
